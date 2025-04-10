@@ -1,0 +1,16 @@
+.next
+node_modules
+dist
+README.md
+.env.example
+pnpm-lock.yaml
+.prettierignore
+*.json
+*.md
+*.txt
+*.svg
+*.png
+*.yaml
+*.gitignore
+*.ico
+*.css
