@@ -4,7 +4,7 @@ import { Code } from '@/components/ui/Code'
 import { Header } from '@/components/ui/Header'
 import { Table } from '@/components/ui/Table'
 import { getLoyaltyAccount } from '@/lib/actions/getLoyaltyAccount'
-import { getLoyaltyAccountHistory } from '@/lib/actions/getLoyaltyAccountHistory'
+import { getLoyaltyTransactionEntries } from '@/lib/actions/getLoyaltyTransactionEntries'
 import { getProfileDetails } from '@/lib/actions/getProfileDetails'
 import { AccountListResponse } from '@snagsolutions/sdk/resources/loyalty/accounts.mjs'
 import { TransactionGetTransactionEntriesResponse } from '@snagsolutions/sdk/resources/loyalty/transactions.mjs'
@@ -26,11 +26,21 @@ export const UserProfile = ({ userId }: UserProfileProps) => {
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsLoading(true)
-      const profileData = await getProfileDetails(userId)
+      const profileData = await getProfileDetails({ userId })
       setProfile(profileData.data)
-      const accountData = await getLoyaltyAccount(userId)
+
+      const userGroupId =
+        profileData.data?.[0]?.userMetadata?.[0]?.userGroupId ?? undefined
+
+      const accountData = await getLoyaltyAccount({
+        ...(!!userGroupId ? { userGroupId } : { userId }),
+      })
       setAccount(accountData.data)
-      const historyData = await getLoyaltyAccountHistory(userId)
+
+      const historyData = await getLoyaltyTransactionEntries({
+        ...(!!userGroupId ? { userGroupId } : { userId }),
+        limit: 1000,
+      })
       setHistory(historyData.data)
       setIsLoading(false)
     }
@@ -72,7 +82,9 @@ export const UserProfile = ({ userId }: UserProfileProps) => {
           {
             key: 'loyaltyTransaction',
             label: 'Description',
-            render: (i) => i.loyaltyTransaction?.description || '',
+            render: (i) =>
+              i?.loyaltyTransaction?.loyaltyRule?.name ??
+              (i.loyaltyTransaction?.description || ''),
           },
           {
             key: 'amount',

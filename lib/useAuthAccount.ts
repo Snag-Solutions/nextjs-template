@@ -80,6 +80,7 @@ export const useAuthAccount = () => {
     userId: session.data?.user?.id,
     walletAddress: session?.data?.address,
     account,
+    isLoading: session.status === 'loading',
     connect: async () => {
       try {
         await connect({
