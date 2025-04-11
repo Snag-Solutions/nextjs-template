@@ -15,6 +15,7 @@ export async function getProfileDetails(
 ): Promise<MetadataListResponse> {
   return snag.users.metadatas.list({
     organizationId: process.env.NEXT_PUBLIC_ORGANIZATION_ID!,
+    websiteId: process.env.NEXT_PUBLIC_WEBSITE_ID!,
     userId,
   })
 }

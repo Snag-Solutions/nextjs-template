@@ -4,7 +4,7 @@ import { Code } from '@/components/ui/Code'
 import { Header } from '@/components/ui/Header'
 import { Table } from '@/components/ui/Table'
 import { getLoyaltyAccount } from '@/lib/actions/getLoyaltyAccount'
-import { getLoyaltyAccountHistory } from '@/lib/actions/getLoyaltyAccountHistory'
+import { getLoyaltyTransactionEntries } from '@/lib/actions/getLoyaltyTransactionEntries'
 import { getProfileDetails } from '@/lib/actions/getProfileDetails'
 import { AccountListResponse } from '@snagsolutions/sdk/resources/loyalty/accounts.mjs'
 import { TransactionGetTransactionEntriesResponse } from '@snagsolutions/sdk/resources/loyalty/transactions.mjs'
@@ -30,7 +30,10 @@ export const UserProfile = ({ userId }: UserProfileProps) => {
       setProfile(profileData.data)
       const accountData = await getLoyaltyAccount(userId)
       setAccount(accountData.data)
-      const historyData = await getLoyaltyAccountHistory(userId)
+      const historyData = await getLoyaltyTransactionEntries({
+        userId,
+        limit: 100,
+      })
       setHistory(historyData.data)
       setIsLoading(false)
     }
@@ -72,7 +75,9 @@ export const UserProfile = ({ userId }: UserProfileProps) => {
           {
             key: 'loyaltyTransaction',
             label: 'Description',
-            render: (i) => i.loyaltyTransaction?.description || '',
+            render: (i) =>
+              i?.loyaltyTransaction?.loyaltyRule?.name ??
+              (i.loyaltyTransaction?.description || ''),
           },
           {
             key: 'amount',

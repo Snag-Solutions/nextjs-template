@@ -1,6 +1,7 @@
 'use server'
 
 import { snag } from '@/lib/snag'
+import { RuleCompleteParams } from '@snagsolutions/sdk/resources/loyalty/rules'
 
 /**
  * Claim a loyalty rule for a user.
@@ -12,11 +13,11 @@ import { snag } from '@/lib/snag'
  */
 export async function claimLoyaltyRule(
   ruleId: string,
-  userId: string
+  params: RuleCompleteParams
 ): Promise<string> {
   try {
     const data = await snag.loyalty.rules.complete(ruleId, {
-      userId,
+      ...params,
     })
     return data?.message
   } catch (error: unknown) {

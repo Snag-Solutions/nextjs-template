@@ -15,6 +15,7 @@ export async function getLoyaltyAccount(
 ): Promise<AccountListResponse> {
   return snag.loyalty.accounts.list({
     organizationId: process.env.NEXT_PUBLIC_ORGANIZATION_ID!,
+    websiteId: process.env.NEXT_PUBLIC_WEBSITE_ID!,
     userId,
   })
 }

@@ -28,7 +28,7 @@ pnpm install
 To use the application, you must configure the required environment variables in a `.env` file:
 
 ```env
-NEXT_PUBLIC_API_KEY=your_api_key
+SNAG_API_KEY=your_api_key
 NEXT_PUBLIC_WEBSITE_ID=your_website_uuid
 NEXT_PUBLIC_ORGANIZATION_ID=your_organization_uuid
 LOYALTY_CURRENCY_ID=your_loyalty_currency_id
@@ -44,7 +44,7 @@ You can generate your key and copy UUIDs in the API KEYS tab on the admin dashbo
 Start the development server:
 
 ```sh
-pnpm dev
+pnpm template:dev
 ```
 
 The app will be available at [http://localhost:3000](http://localhost:3000)
