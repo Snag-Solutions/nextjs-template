@@ -9,6 +9,7 @@ import { ReactNode } from 'react'
 import { createClient, http } from 'viem'
 import { createConfig, WagmiProvider } from 'wagmi'
 import { injected } from 'wagmi/connectors'
+import { ErrorHandlerProvider } from './ErrorHandlerProvider'
 
 type ProvidersProps = {
   children: ReactNode
@@ -33,7 +34,9 @@ export default function Providers({ children }: ProvidersProps) {
       <SessionProvider>
         <WagmiProvider config={defaultWagmiConfig()}>
           <WebsiteProvider>
-            <WalletAccountProvider>{children}</WalletAccountProvider>
+            <WalletAccountProvider>
+              <ErrorHandlerProvider>{children}</ErrorHandlerProvider>
+            </WalletAccountProvider>
           </WebsiteProvider>
         </WagmiProvider>
       </SessionProvider>

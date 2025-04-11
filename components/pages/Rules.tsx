@@ -27,7 +27,6 @@ import {
 } from '@/lib/actions/getLoyaltyMultipliers'
 import { UserListResponse } from '@snagsolutions/sdk/resources/users/index'
 import { getProfileDetails } from '@/lib/actions/getProfileDetails'
-import { ClaimableRuleTypes } from '@/lib/loyalty'
 import { LoyaltyRuleAction } from '../LoyaltyRuleAction'
 
 const LIMIT = 10
@@ -311,7 +310,7 @@ export const Rules = () => {
       <div className="flex justify-between w-full">
         <Header as="h3">List of rules</Header>
 
-        {multipliers?.length && (
+        {!!multipliers?.length && (
           <div>
             <Header as="h3">
               Total Multipler of user: {calcUserTotalMultiplier()}
@@ -403,29 +402,31 @@ export const Rules = () => {
                 )}
               </div>
 
-              {!!ruleMetadata?.cta?.href && (
-                <a
-                  href={ruleMetadata?.cta?.href}
-                  target="_blank"
-                  className="text-sm text-blue-500 underline"
-                >
-                  {ruleMetadata?.cta?.label ?? ruleMetadata?.cta.href}
-                </a>
-              )}
+              <div className="flex flex-col gap-2">
+                {!!ruleMetadata?.cta?.href && (
+                  <a
+                    href={ruleMetadata?.cta?.href}
+                    target="_blank"
+                    className="text-sm text-blue-500 underline"
+                  >
+                    {ruleMetadata?.cta?.label ?? ruleMetadata?.cta.href}
+                  </a>
+                )}
 
-              {!!profile?.[0] && (
-                <LoyaltyRuleAction
-                  user={profile?.[0]}
-                  rule={rule}
-                  latestTransaction={transaction}
-                  loyaltyMultiplier={loyaltyMultiplier}
-                  processingStatus={processingStatus}
-                  onClaim={({ message }) => {
-                    alert(message)
-                    checkProcessingStatus()
-                  }}
-                />
-              )}
+                {!!profile?.[0] && (
+                  <LoyaltyRuleAction
+                    user={profile?.[0]}
+                    rule={rule}
+                    latestTransaction={transaction}
+                    loyaltyMultiplier={loyaltyMultiplier}
+                    processingStatus={processingStatus}
+                    onClaim={({ message }) => {
+                      alert(message)
+                      checkProcessingStatus()
+                    }}
+                  />
+                )}
+              </div>
             </div>
           )
         })}
