@@ -17,36 +17,21 @@ import { getLoyaltyRuleProcessingStatus } from '@/lib/actions/getLoyaltyRuleProc
 import { RuleGetStatusResponse } from '@snagsolutions/sdk/resources/loyalty/rules'
 import { useAuthAccount } from '@/lib/useAuthAccount'
 import { TransactionGetTransactionEntriesResponse } from '@snagsolutions/sdk/resources/loyalty/transactions.mjs'
+
+import { RuleCreateResponse } from '@snagsolutions/sdk/resources/loyalty/rules'
 import Link from 'next/link'
 import { useEffect, useState, useCallback } from 'react'
+import {
+  getLoyaltyMultipliers,
+  LoyaltyMultiplier,
+} from '@/lib/actions/getLoyaltyMultipliers'
+import { UserListResponse } from '@snagsolutions/sdk/resources/users/index'
+import { getProfileDetails } from '@/lib/actions/getProfileDetails'
+import { ClaimableRuleTypes } from '@/lib/loyalty'
+import { LoyaltyRuleAction } from '../LoyaltyRuleAction'
 
 const LIMIT = 10
 const POLLING_INTERVAL = 5000 // 5 seconds
-
-const ClaimableRuleTypes = [
-  'code_entry',
-  'text_input',
-  'link_click',
-  'connect_wallet',
-  'connected_steam',
-  'connected_epic',
-  'connected_email',
-  'connected_telegram',
-  'check_in',
-  'external_rule',
-  'drip_x_follow',
-  'drip_x_new_tweet',
-  'drip_x_text_in_bio',
-  'drip_x_text_in_name',
-  'drip_x_text_in_comment',
-  'drip_x_tweet',
-  'telegram_join',
-  'telegram_messages',
-  'DiscordMessages',
-  'discord_member',
-  'steam_wishlist',
-  'TokenHold', // ONLY for multipler and EVM chains
-]
 
 type TransactionEntry = TransactionGetTransactionEntriesResponse['data'][number]
 
@@ -74,6 +59,68 @@ export const Rules = () => {
     Record<string, NonNullable<LoyaltyRuleProgressResponse['data']>[0]>
   >({})
 
+  const [multipliers, setMultipliers] = useState<LoyaltyMultiplier[]>([])
+
+  const [profile, setProfile] = useState<UserListResponse['data']>([])
+
+  const getProfile = async () => {
+    if (!isAuthenticated || !userId) return
+    const profile = await getProfileDetails({ userId })
+    setProfile(profile.data)
+  }
+
+  // MULTIPLIERS
+  const getUserFinalMultipliers = (multipliers: LoyaltyMultiplier[]) => {
+    const uniqueMultipliers: Record<string, LoyaltyMultiplier> = {}
+
+    for (const multiplier of multipliers) {
+      const multiplierIdf = multiplier.loyaltyRuleId ?? multiplier.id
+      if (!uniqueMultipliers[multiplierIdf]) {
+        uniqueMultipliers[multiplierIdf] = multiplier
+      } else {
+        if (
+          Number(multiplier.multiplier) >
+          Number(uniqueMultipliers[multiplierIdf].multiplier)
+        ) {
+          uniqueMultipliers[multiplierIdf] = multiplier
+        }
+      }
+    }
+
+    const finalMultipliers = Object.values(uniqueMultipliers)
+    return finalMultipliers
+  }
+
+  const calcUserTotalMultiplier = () => {
+    const toalMultipler =
+      multipliers.reduce((acc, curr) => {
+        return acc + Number(curr.multiplier || 0)
+      }, 0) -
+      (multipliers.length - 1)
+
+    return toalMultipler.toFixed(2)
+  }
+
+  const getMultipliers = async () => {
+    if (!isAuthenticated || !userId) return
+
+    // THIS is only required if multiple wallet profiles is enabled in the loyalty program
+    // otherwise this can be ignored
+    const userGroupId =
+      profile?.[0]?.userMetadata?.[0]?.userGroupId ?? undefined
+
+    // if user has a group id, use it to get the multipliers and do not pass the userId
+    // this is only required if user group is required
+    const multipliers = await getLoyaltyMultipliers({
+      ...(!!userGroupId ? {} : { userId }),
+      ...(!!userGroupId && { userGroupId }),
+      limit: 1000, // using large limit to get all multipliers for now
+    })
+    setMultipliers(getUserFinalMultipliers(multipliers.data))
+  }
+  // MULTIPLIERS
+
+  // IN PROGRESS RULES
   const loadRulesInProgress = async (ruleIds: string[]) => {
     if (!isAuthenticated || !userId) return
     const data = await getLoyaltyRuleProgress({
@@ -90,14 +137,19 @@ export const Rules = () => {
 
     setRulesInProgress(newRulesInProgress)
   }
+  // IN PROGRESS RULES
 
+  // COMPLETED RULES
   const loadTransactionEntries = async (ruleIds: string[]) => {
     if (!isAuthenticated || !userId || !ruleIds?.length) return
 
+    const userGroupId =
+      profile?.[0]?.userMetadata?.[0]?.userGroupId ?? undefined
+
     const entries = await getLoyaltyTransactionEntries({
-      userId,
+      ...(!!userGroupId ? { userGroupId } : { userId }),
       userCompletedLoyaltyRuleId: ruleIds,
-      limit: LIMIT,
+      limit: ruleIds.length,
     })
 
     // Update transactions map
@@ -110,7 +162,9 @@ export const Rules = () => {
     })
     setLatestRuleTransactions(newTransactions)
   }
+  // COMPLETED RULES
 
+  // PROCESSING/ENQUEUED RULES
   const checkProcessingStatus = useCallback(async () => {
     if (!isAuthenticated || !userId) return
 
@@ -142,6 +196,9 @@ export const Rules = () => {
           checkProcessingStatus()
         }, POLLING_INTERVAL)
         setPollingTimeoutId(timeoutId)
+      } else {
+        const ruleIds = status.data.map((s) => s.loyaltyRuleId)
+        !!ruleIds?.length && loadTransactionEntries(ruleIds)
       }
     } catch (error) {
       console.error('Failed to check processing status:', error)
@@ -156,7 +213,9 @@ export const Rules = () => {
       }
     }
   }, [pollingTimeoutId])
+  // PROCESSING/ENQUEUED RULES
 
+  // LOAD RULES
   const loadRules = async (startingAfter?: string) => {
     if (isLoading) return
     setIsLoading(true)
@@ -185,6 +244,7 @@ export const Rules = () => {
       setIsLoading(false)
     }
   }
+  // LOAD RULES
 
   // Load rules when auth status changes
   useEffect(() => {
@@ -193,7 +253,19 @@ export const Rules = () => {
     loadRules().finally(() => {
       setIsInitialLoad(false)
     })
+
+    getProfile()
   }, [isAuthenticated, userId, isSessionLoading])
+
+  useEffect(() => {
+    if (!!profile?.length) {
+      getMultipliers()
+
+      // This is added here to re load transactions against the user group
+      // if user is attached to a group.
+      loadTransactionEntries(rules.map((r) => r.id))
+    }
+  }, [profile])
 
   if (isSessionLoading) {
     return <div>Checking Auth Session...</div>
@@ -225,23 +297,51 @@ export const Rules = () => {
 
   return (
     <div className="flex flex-col gap-4 w-full items-start justify-start">
-      <div className="flex flex-col gap-4 w-full items-start justify-start">
-        <Header as="h1">Rules</Header>
-        <Code data={rules} />
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4 flex-1 items-start justify-start">
+          <Header as="h1">All Rules</Header>
+          <Code data={rules} />
+        </div>
+        <div className="flex flex-col gap-4 flex-1 items-start justify-start">
+          <Header as="h1">Multipliers of User</Header>
+          <Code data={multipliers} />
+        </div>
       </div>
       <hr className="border-accent" />
-      <Header as="h3">List of rules</Header>
+      <div className="flex justify-between w-full">
+        <Header as="h3">List of rules</Header>
+
+        {multipliers?.length && (
+          <div>
+            <Header as="h3">
+              Total Multipler of user: {calcUserTotalMultiplier()}
+            </Header>
+            <a
+              className="text-sm text-gray-500 underline"
+              target="_blank"
+              href="https://docs.snagsolutions.io/loyalty/multipliers"
+            >
+              Docs here for how this number is calculated
+            </a>
+          </div>
+        )}
+      </div>
       <div className="flex flex-col gap-4 w-full items-start justify-center">
         {rules.map((rule, ruleIndex) => {
           const transaction = latestRuleTransactions[rule.id]
-          const isCompleted = !!transaction
           const progress = rulesInProgress[rule.id]
           const processingStatus = processingRules[rule.id]
-          const isProcessing = processingStatus?.status === 'pending'
-          const isClaimable =
-            ClaimableRuleTypes.includes(rule.type) && rule.type === 'TokenHold'
-              ? rule.rewardType === 'multiplier'
-              : true
+
+          const loyaltyMultiplier = multipliers.find(
+            (m) => m.loyaltyRuleId === rule.id
+          )
+
+          const completedAt =
+            transaction?.createdAt || loyaltyMultiplier?.createdAt
+
+          const ruleMetadata = rule?.metadata as
+            | RuleCreateResponse.Metadata
+            | undefined
 
           return (
             <div
@@ -254,16 +354,19 @@ export const Rules = () => {
                   {rule?.description}
                 </Header>
                 Rule Id: {rule.id}
-                {isCompleted && (
+                {completedAt && (
                   <div
                     title={JSON.stringify(transaction, null, 2)}
                     className={`relative`}
                   >
                     <div className="text-sm text-green-500">
-                      Completed at{' '}
-                      {new Date(transaction.createdAt).toLocaleString()}
+                      Completed at {new Date(completedAt).toLocaleString()}
                       <br />
-                      Reward: {transaction.amount}
+                      {!!transaction
+                        ? `Last Reward Amount: ${transaction.amount}`
+                        : !!loyaltyMultiplier
+                          ? `Rewarded Multiplier: ${loyaltyMultiplier.multiplier}`
+                          : ''}
                     </div>
                   </div>
                 )}
@@ -299,21 +402,29 @@ export const Rules = () => {
                   </div>
                 )}
               </div>
-              {isClaimable && !isCompleted && !isProcessing && (
-                <Button
-                  onClick={async () => {
-                    if (!isAuthenticated || !userId) return null
-                    const message = await claimLoyaltyRule(rule?.id, {
-                      userId,
-                    })
 
-                    // alert(message)
+              {!!ruleMetadata?.cta?.href && (
+                <a
+                  href={ruleMetadata?.cta?.href}
+                  target="_blank"
+                  className="text-sm text-blue-500 underline"
+                >
+                  {ruleMetadata?.cta?.label ?? ruleMetadata?.cta.href}
+                </a>
+              )}
+
+              {!!profile?.[0] && (
+                <LoyaltyRuleAction
+                  user={profile?.[0]}
+                  rule={rule}
+                  latestTransaction={transaction}
+                  loyaltyMultiplier={loyaltyMultiplier}
+                  processingStatus={processingStatus}
+                  onClaim={({ message }) => {
+                    alert(message)
                     checkProcessingStatus()
                   }}
-                  disabled={!isAuthenticated || !userId}
-                >
-                  Claim
-                </Button>
+                />
               )}
             </div>
           )

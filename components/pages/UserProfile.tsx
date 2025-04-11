@@ -26,7 +26,7 @@ export const UserProfile = ({ userId }: UserProfileProps) => {
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsLoading(true)
-      const profileData = await getProfileDetails(userId)
+      const profileData = await getProfileDetails({ userId })
       setProfile(profileData.data)
       const accountData = await getLoyaltyAccount(userId)
       setAccount(accountData.data)
