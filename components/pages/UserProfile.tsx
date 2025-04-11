@@ -28,11 +28,18 @@ export const UserProfile = ({ userId }: UserProfileProps) => {
       setIsLoading(true)
       const profileData = await getProfileDetails({ userId })
       setProfile(profileData.data)
-      const accountData = await getLoyaltyAccount(userId)
+
+      const userGroupId =
+        profileData.data?.[0]?.userMetadata?.[0]?.userGroupId ?? undefined
+
+      const accountData = await getLoyaltyAccount({
+        ...(!!userGroupId ? { userGroupId } : { userId }),
+      })
       setAccount(accountData.data)
+
       const historyData = await getLoyaltyTransactionEntries({
-        userId,
-        limit: 100,
+        ...(!!userGroupId ? { userGroupId } : { userId }),
+        limit: 1000,
       })
       setHistory(historyData.data)
       setIsLoading(false)
