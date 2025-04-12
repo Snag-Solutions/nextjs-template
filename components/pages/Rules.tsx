@@ -347,59 +347,68 @@ export const Rules = () => {
               key={rule?.id}
               className="flex flex-row gap-2 items-center justify-between bg-accent p-4 rounded-xl w-full"
             >
-              <div className="flex flex-col gap-2">
-                <Header as="h5">{rule?.name}</Header>
-                <Header className="break-all" as="p">
-                  {rule?.description}
-                </Header>
-                Rule Id: {rule.id}
-                {completedAt && (
-                  <div
-                    title={JSON.stringify(transaction, null, 2)}
-                    className={`relative`}
-                  >
-                    <div className="text-sm text-green-500">
-                      Completed at {new Date(completedAt).toLocaleString()}
-                      <br />
-                      {!!transaction
-                        ? `Last Reward Amount: ${transaction.amount}`
-                        : !!loyaltyMultiplier
-                          ? `Rewarded Multiplier: ${loyaltyMultiplier.multiplier}`
-                          : ''}
+              <div className="flex flex-row gap-4 items-center justify-center">
+                {rule?.mediaUrl && (
+                  <img
+                    src={rule?.mediaUrl}
+                    alt={rule?.name ?? ''}
+                    className="rounded max-w-sm max-h-sm object-contain"
+                  />
+                )}
+                <div className="flex flex-col gap-2">
+                  <Header as="h5">{rule?.name}</Header>
+                  <Header className="break-all" as="p">
+                    {rule?.description}
+                  </Header>
+                  Rule Id: {rule.id}
+                  {completedAt && (
+                    <div
+                      title={JSON.stringify(transaction, null, 2)}
+                      className={`relative`}
+                    >
+                      <div className="text-sm text-green-500">
+                        Completed at {new Date(completedAt).toLocaleString()}
+                        <br />
+                        {!!transaction
+                          ? `Last Reward Amount: ${transaction.amount}`
+                          : !!loyaltyMultiplier
+                            ? `Rewarded Multiplier: ${loyaltyMultiplier.multiplier}`
+                            : ''}
+                      </div>
                     </div>
-                  </div>
-                )}
-                {processingStatus && (
-                  <div
-                    className={`text-sm ${
-                      processingStatus.status === 'pending'
-                        ? 'text-yellow-500'
-                        : processingStatus.status === 'completed'
-                          ? 'text-green-500'
-                          : 'text-red-500'
-                    }`}
-                  >
-                    Processing Status: {processingStatus.status}
-                    <br />
-                    {processingStatus.message &&
-                      `Processing Message: ${processingStatus.message}`}
-                  </div>
-                )}
-                {!!progress && (
-                  <div className="text-sm text-gray-500">
-                    {progress.progress}%
-                  </div>
-                )}
-                {rule.startTime && (
-                  <div className="text-sm text-gray-500">
-                    Started at {new Date(rule.startTime).toLocaleString()}
-                  </div>
-                )}
-                {rule.endTime && (
-                  <div className="text-sm text-red-500">
-                    Expires at {new Date(rule.endTime).toLocaleString()}
-                  </div>
-                )}
+                  )}
+                  {processingStatus && (
+                    <div
+                      className={`text-sm ${
+                        processingStatus.status === 'pending'
+                          ? 'text-yellow-500'
+                          : processingStatus.status === 'completed'
+                            ? 'text-green-500'
+                            : 'text-red-500'
+                      }`}
+                    >
+                      Processing Status: {processingStatus.status}
+                      <br />
+                      {processingStatus.message &&
+                        `Processing Message: ${processingStatus.message}`}
+                    </div>
+                  )}
+                  {!!progress && (
+                    <div className="text-sm text-gray-500">
+                      {progress.progress}%
+                    </div>
+                  )}
+                  {rule.startTime && (
+                    <div className="text-sm text-gray-500">
+                      Started at {new Date(rule.startTime).toLocaleString()}
+                    </div>
+                  )}
+                  {rule.endTime && (
+                    <div className="text-sm text-red-500">
+                      Expires at {new Date(rule.endTime).toLocaleString()}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="flex flex-col gap-2">

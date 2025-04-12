@@ -14,6 +14,7 @@ export type RuleListResponseFull = {
       endTime: string
       startTime: string
       rewardType: 'points' | 'multiplier'
+      mediaUrl?: string | null
     }
   >
   hasNextPage: boolean
