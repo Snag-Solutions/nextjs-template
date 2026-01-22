@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@snagsolutions/sdk':
-        specifier: 0.1.0-alpha.23
-        version: 0.1.0-alpha.23
+        specifier: 0.1.0-alpha.218
+        version: 0.1.0-alpha.218
       '@tanstack/react-query':
         specifier: ^5.56.2
         version: 5.72.2(react@19.1.0)
@@ -771,8 +771,8 @@ packages:
   '@scure/bip39@1.5.4':
     resolution: {integrity: sha512-TFM4ni0vKvCfBpohoh+/lY05i9gRbSwXWngAsF4CABQxoaOHijxuaZ2R6cStDQ5CHtHO9aGJTr4ksVJASRRyMA==}
 
-  '@snagsolutions/sdk@0.1.0-alpha.23':
-    resolution: {integrity: sha512-mET4Gs7CGZizePh9mQ+CHmmTN5dZ8EFSlcUXxmKJXmYmJKmx1LIkS24NedvYGlFDOhdezzUwSTSbWlSmFE914A==}
+  '@snagsolutions/sdk@0.1.0-alpha.218':
+    resolution: {integrity: sha512-3REbts3UmBqTLGgQnZ6kTtuvU6utsrh6bcZdzhIyq8vPLzdFAZSCQ/fneErcb4XiEJ5qKDuEM0xiD/xuiQ+AAg==}
 
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
@@ -2357,6 +2357,7 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
 
   node-fetch-native@1.6.6:
     resolution: {integrity: sha512-8Mc2HhqPdlIfedsuZoc3yioPuzp6b+L5jRCRY1QzuWZh2EGJVQrGppC6V6cF0bLdbW0+O2YpqCA25aF/1lvipQ==}
@@ -3698,7 +3699,7 @@ snapshots:
       '@ethereumjs/tx': 4.2.0
       '@types/debug': 4.1.12
       debug: 4.4.0
-      semver: 7.7.1
+      semver: 7.7.3
       superstruct: 1.0.4
     transitivePeerDependencies:
       - supports-color
@@ -3915,7 +3916,7 @@ snapshots:
       '@noble/hashes': 1.7.1
       '@scure/base': 1.2.4
 
-  '@snagsolutions/sdk@0.1.0-alpha.23':
+  '@snagsolutions/sdk@0.1.0-alpha.218':
     dependencies:
       '@types/node': 18.19.86
       '@types/node-fetch': 2.6.12
@@ -6354,8 +6355,7 @@ snapshots:
 
   semver@7.7.1: {}
 
-  semver@7.7.3:
-    optional: true
+  semver@7.7.3: {}
 
   set-blocking@2.0.0: {}
 

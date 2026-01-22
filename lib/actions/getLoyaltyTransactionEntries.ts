@@ -5,7 +5,7 @@ import {
   TransactionGetTransactionEntriesParams,
 } from '@snagsolutions/sdk/resources/loyalty/transactions.mjs'
 import { objectToSearchParams } from '@/lib/utils'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 /**
  * Fetches the loyalty transaction entries for the specified organization.
@@ -23,14 +23,19 @@ export async function getLoyaltyTransactionEntries(
     organizationId: process.env.NEXT_PUBLIC_ORGANIZATION_ID!,
     websiteId: process.env.NEXT_PUBLIC_WEBSITE_ID!,
   })
-  const response = await axios.get<TransactionGetTransactionEntriesResponse>(
-    `${snag.baseURL}/api/loyalty/transaction_entries?${searchParams.toString()}`,
-    {
-      headers: {
-        'x-api-key': snag.apiKey,
-      },
-    }
-  )
+  try {
+    const response = await axios.get<TransactionGetTransactionEntriesResponse>(
+      `${snag.baseURL}/api/loyalty/transaction_entries?${searchParams.toString()}`,
+      {
+        headers: {
+          'x-api-key': snag.apiKey,
+        },
+      }
+    )
 
-  return response.data
+    return response.data
+  } catch (error) {
+    console.error((error as AxiosError<TransactionGetTransactionEntriesResponse>)?.response?.data)
+    throw error
+  }
 }

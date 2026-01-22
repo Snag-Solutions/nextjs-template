@@ -42,3 +42,98 @@ export const ViemChainByChainId: { [key in SupportedChainId]: Chain } = {
 export const getAllSupportedChains = () => {
   return [mainnet, base] as readonly [Chain, ...Chain[]]
 }
+
+type NetworkKey =
+  | 'abstract'
+  | 'abstractTestnet'
+  | 'apechain'
+  | 'arbitrum'
+  | 'arbitrumGoerli'
+  | 'arbitrumSepolia'
+  | 'avalanche'
+  | 'avalancheFuji'
+  | 'base'
+  | 'baseSepolia'
+  | 'basecamp'
+  | 'berachain'
+  | 'berachainArtio'
+  | 'berachainBepolia'
+  | 'binance'
+  | 'bscTestnet'
+  | 'campTestnet'
+  | 'coti'
+  | 'cotiTestnet'
+  | 'fantom'
+  | 'fantomTestnet'
+  | 'flowMainnet'
+  | 'flow_cadence'
+  | 'goerli'
+  | 'mainnet'
+  | 'morph'
+  | 'morphHolesky'
+  | 'morphTestnet'
+  | 'nexusTestnet'
+  | 'nitrograph'
+  | 'optimism'
+  | 'optimism_goerli'
+  | 'optimism_sepolia'
+  | 'polkadot'
+  | 'polygon'
+  | 'polygon_mumbai'
+  | 'sepolia'
+  | 'skaleCalypso'
+  | 'skaleEuropa'
+  | 'skaleNebula'
+  | 'solana'
+  | 'somnia'
+  | 'sophon'
+  | 'sophonTestnet'
+  | 'sui'
+  | 'superseed'
+  | 'superseedSepolia'
+  | 'ultra'
+  | 'ultraTestnet'
+  | 'vanar'
+  | 'xai'
+  | 'zkverify'
+  | 'zksync'
+  | 'kusama'
+
+const networkChainIdMap: Partial<Record<NetworkKey, number>> = {
+  abstract: 2741,
+  abstractTestnet: 11124,
+  apechain: 33139,
+  arbitrum: 42161,
+  arbitrumGoerli: 421613,
+  arbitrumSepolia: 421614,
+  mainnet: 1,
+  sepolia: 11155111,
+  goerli: 5,
+  base: 8453,
+  baseSepolia: 84532,
+  basecamp: 8453,
+  binance: 56,
+  bscTestnet: 97,
+  campTestnet: 7701,
+  optimism: 10,
+  optimism_sepolia: 11155420,
+  optimism_goerli: 420,
+  polygon: 137,
+  polygon_mumbai: 80001,
+  avalanche: 43114,
+  avalancheFuji: 43113,
+  fantom: 250,
+  fantomTestnet: 4002,
+  morph: 2818,
+  morphHolesky: 2810,
+  morphTestnet: 2810,
+  superseed: 5330,
+  superseedSepolia: 5331,
+  xai: 660279,
+  zksync: 324,
+}
+
+export const getChainIdFromNetwork = (network?: string | null) => {
+  if (!network) return undefined
+  return networkChainIdMap[network as NetworkKey]
+}

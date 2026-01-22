@@ -39,7 +39,7 @@ export const UserProfile = ({ userId }: UserProfileProps) => {
 
       const historyData = await getLoyaltyTransactionEntries({
         ...(!!userGroupId ? { userGroupId } : { userId }),
-        limit: 1000,
+        limit: 100,
       })
       setHistory(historyData.data)
       setIsLoading(false)
