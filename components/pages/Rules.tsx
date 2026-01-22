@@ -148,7 +148,7 @@ export const Rules = () => {
     const entries = await getLoyaltyTransactionEntries({
       ...(!!userGroupId ? { userGroupId } : { userId }),
       userCompletedLoyaltyRuleId: ruleIds,
-      limit: ruleIds.length,
+      limit: Math.min(ruleIds.length, 100),
     })
 
     // Update transactions map
@@ -379,13 +379,12 @@ export const Rules = () => {
                   )}
                   {processingStatus && (
                     <div
-                      className={`text-sm ${
-                        processingStatus.status === 'pending'
-                          ? 'text-yellow-500'
-                          : processingStatus.status === 'completed'
-                            ? 'text-green-500'
-                            : 'text-red-500'
-                      }`}
+                      className={`text-sm ${processingStatus.status === 'pending'
+                        ? 'text-yellow-500'
+                        : processingStatus.status === 'completed'
+                          ? 'text-green-500'
+                          : 'text-red-500'
+                        }`}
                     >
                       Processing Status: {processingStatus.status}
                       <br />
