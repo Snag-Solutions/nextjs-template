@@ -16,6 +16,10 @@ export const routes: Route[] = [
     path: '/rules',
   },
   {
+    name: 'Add Rule',
+    path: '/addRule',
+  },
+  {
     name: 'Minting',
     path: '/minting',
   },

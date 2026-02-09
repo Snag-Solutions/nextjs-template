@@ -55,3 +55,7 @@ export const TelegramRuleTypes = [
 export const SteamRuleTypes = ['connected_steam', 'steam_wishlist']
 
 export const EpicRuleTypes = ['connected_epic']
+
+export const TiktokRuleTypes = ['connected_tiktok', 'tiktok_follow', 'tiktok_post']
+
+export const RedditRuleTypes = ['connected_reddit', 'reddit_comment']

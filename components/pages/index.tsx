@@ -1,3 +1,4 @@
+export * from './AddRule'
 export * from './Home'
 export * from './Leaderboard'
 export * from './Profile'

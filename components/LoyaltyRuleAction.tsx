@@ -6,6 +6,8 @@ import {
   TelegramRuleTypes,
   TwitterRuleTypes,
   ClaimableRuleTypes,
+  TiktokRuleTypes,
+  RedditRuleTypes,
 } from '@/lib/loyalty'
 import { UserListResponse } from '@snagsolutions/sdk/resources/users/index'
 import { TransactionGetTransactionEntriesResponse } from '@snagsolutions/sdk/resources/loyalty/transactions.mjs'
@@ -14,6 +16,10 @@ import { claimLoyaltyRule } from '@/lib/actions/claimLoyaltyRule'
 import { connectUserSocialAuth } from '@/lib/actions/connectUserSocialAuth'
 import { LoyaltyMultiplier } from '@/lib/actions/getLoyaltyMultipliers'
 import { RuleGetStatusResponse } from '@snagsolutions/sdk/resources/loyalty/rules.mjs'
+import {
+  tiktokConnect,
+  redditConnect
+} from '@/lib/custom-auth'
 export const LoyaltyRuleAction = ({
   user,
   rule,
@@ -34,17 +40,41 @@ export const LoyaltyRuleAction = ({
   const isTelegramRule = TelegramRuleTypes.includes(rule.type)
   const isSteamRule = SteamRuleTypes.includes(rule.type)
   const isEpicRule = EpicRuleTypes.includes(rule.type)
+  const isTiktokRule = TiktokRuleTypes.includes(rule.type)
+  const isRedditRule = RedditRuleTypes.includes(rule.type)
+
+  const isCustomFlow = isTiktokRule || isRedditRule
 
   const connectSocial = async (
-    authType: 'twitter' | 'discord' | 'telegram' | 'epic' | 'steam'
+    authType: 'twitter' | 'discord' | 'telegram' | 'epic' | 'steam' | 'tiktok' | 'reddit'
   ) => {
+    
     const resp = await connectUserSocialAuth(authType, {
       userId: user.id,
       responseType: 'json',
       redirect: window.location.href,
     })
 
-    window.location.href = resp.url
+    if (!isCustomFlow){
+      window.location.href = resp.url
+    }
+
+    if (authType === 'tiktok') {
+      const state = (resp as { state?: string }).state
+      if (!state || typeof state !== 'string') {
+        throw new Error('TikTok auth state not returned')
+      }
+      await tiktokConnect(state)
+    }
+
+    if (authType === 'reddit') {
+      const state = (resp as { state?: string }).state
+      if (!state || typeof state !== 'string') {
+        throw new Error('Reddit auth state not returned')
+      }
+      await redditConnect(state)
+    }
+
   }
 
   if (isTwitterRule && !user.userMetadata?.[0]?.twitterUser) {
@@ -73,6 +103,14 @@ export const LoyaltyRuleAction = ({
 
   if (isEpicRule && !user.userMetadata?.[0]?.epicAccountIdentifier) {
     return <Button onClick={() => connectSocial('epic')}>Connect Epic</Button>
+  }
+
+  if (isTiktokRule && !user.userMetadata?.[0]?.tiktokUserId) {
+    return <Button onClick={() => connectSocial('tiktok')}>Connect Tiktok</Button>
+  }
+
+  if (isRedditRule && !user.userMetadata?.[0]?.redditUserId) {
+    return <Button onClick={() => connectSocial('reddit')}>Connect Reddit</Button>
   }
 
   const isCompleted = !!latestTransaction || !!loyaltyMultiplier

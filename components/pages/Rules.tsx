@@ -20,6 +20,7 @@ import { TransactionGetTransactionEntriesResponse } from '@snagsolutions/sdk/res
 
 import { RuleCreateResponse } from '@snagsolutions/sdk/resources/loyalty/rules'
 import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
 import {
   getLoyaltyMultipliers,
@@ -35,12 +36,24 @@ const POLLING_INTERVAL = 5000 // 5 seconds
 type TransactionEntry = TransactionGetTransactionEntriesResponse['data'][number]
 
 export const Rules = () => {
+  const searchParams = useSearchParams()
+  const router = useRouter()
   const {
     userId,
     isAuthenticated,
     isLoading: isSessionLoading,
   } = useAuthAccount()
   const [rules, setRules] = useState<RuleListResponseFull['data']>([])
+
+  // Show popup when redirected with TikTok verification error
+  useEffect(() => {
+    if (searchParams.get('error') === 'INVALID_TIKTOK_CODE') {
+      window.alert(
+        'TikTok connect failed. Please check that you added the code to your TikTok bio and that your profile URL is correct, then try again.'
+      )
+      router.replace('/rules', { scroll: false })
+    }
+  }, [searchParams, router])
   const [lastId, setLastId] = useState<string | null>(null)
   const [hasMore, setHasMore] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
