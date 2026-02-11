@@ -8,7 +8,7 @@ import {
   BasicDetailsSection,
   getRuleSpecificFieldsComponent,
   type RuleFormValues,
-} from '@/components/rule-fields'
+} from '@/components/rule-specific-fields'
 import { createLoyaltyRule } from '@/lib/actions/createLoyaltyRule'
 import { getLoyaltyRuleGroups } from '@/lib/actions/getLoyaltyRuleGroups'
 import { getRuleOptions } from '@/lib/rule-options'
