@@ -3,6 +3,14 @@
 import { ALL_LOYALTY_RULE_TYPES, getRuleOptions } from '@/lib/rule-options'
 import { RuleFormValues } from './types'
 
+/** Format an ISO UTC string for datetime-local input (shows user's local time) */
+function toDateTimeLocalValue(isoUtc: string): string {
+  if (!isoUtc) return ''
+  const d = new Date(isoUtc)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 export type RuleGroupOption = { id: string; name: string }
 
 export type BasicDetailsSectionProps = {
@@ -196,13 +204,11 @@ export function BasicDetailsSection({
         <input
           type="datetime-local"
           className="rounded-lg border border-gray-300 px-3 py-2"
-          value={
-            value.startTime
-              ? new Date(value.startTime).toISOString().slice(0, 16)
-              : ''
-          }
+          value={toDateTimeLocalValue(value.startTime)}
           onChange={(e) =>
-            onChange({ startTime: e.target.value ? new Date(e.target.value).toISOString() : '' })
+            onChange({
+              startTime: e.target.value ? new Date(e.target.value).toISOString() : '',
+            })
           }
         />
       </label>
@@ -212,11 +218,7 @@ export function BasicDetailsSection({
         <input
           type="datetime-local"
           className="rounded-lg border border-gray-300 px-3 py-2"
-          value={
-            value.endTime
-              ? new Date(value.endTime).toISOString().slice(0, 16)
-              : ''
-          }
+          value={toDateTimeLocalValue(value.endTime)}
           onChange={(e) =>
             onChange({
               endTime: e.target.value ? new Date(e.target.value).toISOString() : '',

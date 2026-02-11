@@ -4,7 +4,7 @@ import { RuleSpecificFieldProps } from './types'
 
 const X_POST_URL_PATTERN = /^https:\/\/x\.com\/.+/
 
-export function DripXTweetFields({ value, onChange }: RuleSpecificFieldProps) {
+export function XTweetFields({ value, onChange }: RuleSpecificFieldProps) {
   const metadata = value.metadata ?? {}
   const twitterPostUrl = (metadata.twitterPostUrl as string) ?? ''
   const checkLike = (metadata.checkLike as boolean) ?? false

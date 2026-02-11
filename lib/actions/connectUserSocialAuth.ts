@@ -2,9 +2,10 @@
 
 import { AuthConnectAuthParams } from '@snagsolutions/sdk/resources/auth'
 import { snag } from '@/lib/snag'
+import { AuthType } from '@/lib/loyalty'
 
 export const connectUserSocialAuth = async (
-  authType: 'twitter' | 'discord' | 'telegram' | 'epic' | 'steam' | 'tiktok' | 'reddit',
+  authType: AuthType,
   params: AuthConnectAuthParams
 ) => {
   return await snag.auth.connectAuth(authType, {

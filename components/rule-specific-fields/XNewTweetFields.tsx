@@ -6,7 +6,7 @@ const MAX_TEXT_LENGTH = 32
 
 type CheckTextEntry = { text: string }
 
-export function DripXNewTweetFields({ value, onChange }: RuleSpecificFieldProps) {
+export function XNewTweetFields({ value, onChange }: RuleSpecificFieldProps) {
   const metadata = value.metadata ?? {}
   const checkTexts = (metadata.checkTexts as CheckTextEntry[] | undefined) ?? [{ text: '' }]
   const requirePostLink = (metadata.requirePostLink as boolean) ?? true
