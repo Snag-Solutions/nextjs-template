@@ -12,7 +12,7 @@ export const ClaimableRuleTypes = [
   'connected_email',
   'connected_telegram',
   'check_in',
-  'external_rule',
+  //'external_rule',
   'drip_x_follow',
   'drip_x_new_tweet',
   'drip_x_text_in_bio',
@@ -24,26 +24,27 @@ export const ClaimableRuleTypes = [
   'DiscordMessages',
   'discord_member',
   'steam_wishlist',
-  // 'post_impressions',
+  'post_impressions',
   // 'twitter_followers',
-  // 'tiktok_follow',
-  // 'tiktok_post',
-  // 'instagram_post',
-  // 'github_repo_star',
-  // 'github_repo_fork',
-  // 'github_repo_collaborator',
+  'tiktok_follow',
+  'tiktok_post',
+  'instagram_post',
+  'github_repo_star',
+  'github_repo_fork',
+  'github_repo_collaborator',
   // 'github_merge_PR',
-  // 'youtube_subscribers',
-  // 'youtube_comment',
-  // 'reddit_comment',
+  'youtube_subscribers',
+  'youtube_comment',
+  'reddit_comment',
   // 'BoughtOn',
   // 'SoldOn',
   // 'token_hold_erc20',
-  // 'quiz',
-  // 'poll',
+  'quiz',
+  'poll',
   // 'shopify_spend',
   // 'snapshot_governance',
   // 'create_partner_account',
+  'profile_completed'
 ]
 
 export const OtherRuleTypes = [
@@ -109,3 +110,5 @@ export const RedditRuleTypes = ['connected_reddit', 'reddit_comment']
 export const InstagramRuleTypes = ['connected_instagram', 'instagram_post']
 
 export const GithubRuleTypes = ['connected_github', 'github_repo_star', 'github_repo_fork', 'github_repo_collaborator', 'github_merge_PR']
+
+export const YoutubeRuleTypes = ['youtube_subscribers', 'youtube_comment']
